@@ -14,14 +14,11 @@ export default {
       this.$emit("cardRotated", {
         value: this.item,
         findPair: this.findPair,
-        goBack: this.goBack
+        goBack: this.reset
       })
     },
     findPair() {
       this.$refs.card.classList.add("hasPair")
-    },
-    goBack() {
-      this.$refs.card.classList.remove("rotated")
     },
     reset() {
       this.$refs.card.classList = "cell"

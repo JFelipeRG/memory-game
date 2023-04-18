@@ -2,14 +2,7 @@
 import BoardCell from "./components/BoardCell.vue"
 import ModalWinner from "./components/ModalWinner.vue"
 
-const ITEMS = [
-  "🍍",
-  "🎮",
-  "💥",
-  "🍕",
-  "🍙",
-  "🧠"
-]
+import { ITEMS } from "./constants/items"
 
 export default {
   components: {
@@ -29,7 +22,7 @@ export default {
   },
   watch: {
     randomly: function () {
-      if(this.$refs.cells) {
+      if (this.$refs.cells) {
         for (const cell of this.$refs.cells) {
           cell.reset()
         }
@@ -51,13 +44,14 @@ export default {
       }
 
       this.randomly = randomIndex
-      this.winner = false
+      setTimeout(() => this.winner = false, 200)
       this.numberFindPairs = 0
+
     },
     cardRotated(cardItem) {
       this.selectedPairs.push(cardItem)
 
-      if (this.selectedPairs.length === 2) setTimeout(() => this.checkPairs(),550)
+      if (this.selectedPairs.length === 2) setTimeout(() => this.checkPairs(), 550)
     },
     checkPairs() {
       if (this.selectedPairs[0].value === this.selectedPairs[1].value) {
@@ -77,6 +71,15 @@ export default {
     },
     checkWinner() {
       if (this.numberFindPairs === ITEMS.length) this.winner = true
+    },
+    resetCells() {
+      if (this.$refs.cells) {
+        for (const cell of this.$refs.cells) {
+          cell.reset()
+        }
+      }
+
+      setTimeout(() => this.randomizeBoard, 600)
     }
   }
 }
@@ -86,10 +89,11 @@ export default {
   <ModalWinner v-if="winner" :reset="randomizeBoard"></ModalWinner>
   <h1>Memory Game</h1>
   <div class="board">
-    <BoardCell ref="cells" @cardRotated="cardRotated" v-for="(value, index) in randomly" :key="index" :item="ITEMS[value]" :rotatedCards="selectedPairs.length">
+    <BoardCell ref="cells" @cardRotated="cardRotated" v-for="(value, index) in randomly" :key="index" :item="ITEMS[value]"
+      :rotatedCards="selectedPairs.length">
     </BoardCell>
   </div>
-  <button @click="randomizeBoard" class="reset-button">Reset Game</button>
+  <button @click="resetCells" class="reset-button">Reset Game</button>
 </template>
 
 <style>

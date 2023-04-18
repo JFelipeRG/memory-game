@@ -1,10 +1,10 @@
 <script>
-  export default {
-    name: "ModalWinner",
-    props: {
-      reset: Function
-    }
+export default {
+  name: "ModalWinner",
+  props: {
+    reset: Function
   }
+}
 </script>
 
 <template>
