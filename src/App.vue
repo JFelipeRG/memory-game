@@ -14,11 +14,17 @@ export default {
       randomly: [],
       selectedPairs: [],
       numberFindPairs: 0,
-      winner: false
+      winner: false,
+      start: true,
+      timmerInterval: "",
+      timmer: 0,
+      record: 0,
+      newRecord: false
     }
   },
   beforeMount() {
     this.randomizeBoard()
+    this.record = parseInt(localStorage.record)
   },
   watch: {
     randomly: function () {
@@ -44,11 +50,20 @@ export default {
       }
 
       this.randomly = randomIndex
-      setTimeout(() => this.winner = false, 200)
+      setTimeout(() => this.winner = false, 100)
       this.numberFindPairs = 0
+      clearInterval(this.timmerInterval)
+      this.timmer = 0
+      this.start = true
+      this.newRecord = false
 
     },
     cardRotated(cardItem) {
+      if (this.start) {
+        this.start = false
+        this.startTimmer()
+      }
+
       this.selectedPairs.push(cardItem)
 
       if (this.selectedPairs.length === 2) setTimeout(() => this.checkPairs(), 550)
@@ -70,7 +85,17 @@ export default {
       this.checkWinner()
     },
     checkWinner() {
-      if (this.numberFindPairs === ITEMS.length) this.winner = true
+      if (!(this.numberFindPairs === ITEMS.length)) return
+
+      this.newRecord = this.record > this.timmer
+
+      this.winner = true
+      clearInterval(this.timmerInterval)
+      if(this.newRecord) localStorage.setItem("record", this.timmer)
+
+      this.record = this.newRecord ? this.timmer : this.record
+
+      this.start = true
     },
     resetCells() {
       if (this.$refs.cells) {
@@ -79,15 +104,32 @@ export default {
         }
       }
 
-      setTimeout(() => this.randomizeBoard, 600)
+      setTimeout(this.randomizeBoard, 600)
+    },
+    startTimmer() {
+      this.timmerInterval = setInterval(() => {
+        this.timmer += 1000
+      }, 1000)
+    },
+    parseTimmer(timmer) {
+      let seconds = timmer / 1000;
+
+      const minutes = parseInt(seconds / 60)
+      seconds = seconds % 60;
+
+      return String(minutes).padStart(2, 0) + ":" + String(seconds).padStart(2, 0)
     }
   }
 }
 </script>
 
 <template>
-  <ModalWinner v-if="winner" :reset="randomizeBoard"></ModalWinner>
+  <ModalWinner v-if="winner" :reset="randomizeBoard" :timmer="parseTimmer(timmer)" :record="parseTimmer(record)" :newRecord="this.newRecord"></ModalWinner>
   <h1>Memory Game</h1>
+  <div class="timer-container">
+    <span>👑 {{ parseTimmer(record) }}</span>
+    <span>{{ parseTimmer(timmer) }} ⌛</span>
+  </div>
   <div class="board">
     <BoardCell ref="cells" @cardRotated="cardRotated" v-for="(value, index) in randomly" :key="index" :item="ITEMS[value]"
       :rotatedCards="selectedPairs.length">
@@ -99,6 +141,11 @@ export default {
 <style>
 h1 {
   text-align: center;
+}
+
+.timer-container {
+  display: flex;
+  justify-content: space-between;
 }
 
 .board {

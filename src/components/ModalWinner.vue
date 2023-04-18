@@ -2,7 +2,10 @@
 export default {
   name: "ModalWinner",
   props: {
-    reset: Function
+    reset: Function,
+    timmer: String,
+    record: String,
+    newRecord: Boolean
   }
 }
 </script>
@@ -11,6 +14,9 @@ export default {
   <div class="modal">
     <div>
       <h1>Has ganado!</h1>
+      <p v-if="newRecord">🎊¡¡NUEVO RECORD!!🎊</p>
+      <p>Record: {{ record }}</p>
+      <p>Tiempo Actual: {{ timmer }}</p>
       <button class="reset-button" @click="reset">Reset Game</button>
     </div>
   </div>
@@ -37,5 +43,9 @@ export default {
   gap: 20px;
   border: 3px solid var(--clr-base-txt);
   border-radius: 10px;
+}
+
+.modal p {
+  text-align: center;
 }
 </style>
