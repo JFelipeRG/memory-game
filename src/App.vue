@@ -24,7 +24,7 @@ export default {
   },
   beforeMount() {
     this.randomizeBoard()
-    this.record = parseInt(localStorage.record)
+    this.record = parseInt(localStorage.record) || 0
   },
   watch: {
     randomly: function () {
