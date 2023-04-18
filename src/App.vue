@@ -87,7 +87,7 @@ export default {
     checkWinner() {
       if (!(this.numberFindPairs === ITEMS.length)) return
 
-      this.newRecord = this.record > this.timmer
+      this.newRecord = (this.record > this.timmer) || this.record === 0
 
       this.winner = true
       clearInterval(this.timmerInterval)
